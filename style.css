@@ -152,6 +152,11 @@ button {
     justify-items: center;
 }
 
+.ad-slot {
+    margin: 16px 0 8px;
+    width: min(100%, 360px);
+}
+
 #webcam-container canvas {
     border-radius: 12px;
     border: 1px solid var(--button-border);
