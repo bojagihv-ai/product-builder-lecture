@@ -102,6 +102,8 @@ button {
     display: flex;
     justify-content: center;
     margin: 12px 0 4px;
+    gap: 12px;
+    flex-wrap: wrap;
 }
 
 .upload {
@@ -118,6 +120,27 @@ button {
 
 .upload input {
     display: none;
+}
+
+.select {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border-radius: 999px;
+    border: 1px solid var(--button-border);
+    font-size: 0.9em;
+    background: transparent;
+}
+
+.select select,
+.select input {
+    border: none;
+    background: transparent;
+    color: var(--text);
+    font: inherit;
+    outline: none;
+    min-width: 110px;
 }
 
 @keyframes ball-roll {
