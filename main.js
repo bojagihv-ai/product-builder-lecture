@@ -2,6 +2,7 @@ const numbersContainer = document.querySelector('.numbers');
 const generateButton = document.getElementById('generate');
 const themeToggle = document.getElementById('theme-toggle');
 const bgUpload = document.getElementById('bg-upload');
+const weatherEl = document.getElementById('weather');
 const storageKey = 'preferred-theme';
 const backgroundKey = 'background-image';
 const root = document.documentElement;
@@ -67,10 +68,53 @@ bgUpload.addEventListener('change', (event) => {
     reader.readAsDataURL(file);
 });
 
+function updateWeatherStatus(message) {
+    weatherEl.textContent = message;
+}
+
+function fetchTemperature(latitude, longitude) {
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m&timezone=auto`;
+    return fetch(url)
+        .then((response) => response.json())
+        .then((data) => {
+            const temp = data?.current?.temperature_2m;
+            const unit = data?.current_units?.temperature_2m || '°C';
+            if (typeof temp !== 'number') {
+                throw new Error('Temperature not available');
+            }
+            return `${temp}${unit}`;
+        });
+}
+
+function loadTemperature() {
+    if (!navigator.geolocation) {
+        updateWeatherStatus('Location not supported.');
+        return;
+    }
+    updateWeatherStatus('Fetching temperature...');
+    navigator.geolocation.getCurrentPosition(
+        (position) => {
+            const { latitude, longitude } = position.coords;
+            fetchTemperature(latitude, longitude)
+                .then((tempText) => {
+                    updateWeatherStatus(`Current temperature: ${tempText}`);
+                })
+                .catch(() => {
+                    updateWeatherStatus('Unable to load temperature.');
+                });
+        },
+        () => {
+            updateWeatherStatus('Location permission denied.');
+        },
+        { timeout: 10000 }
+    );
+}
+
 // Initial generation
 setTheme(getInitialTheme());
 const savedBackground = localStorage.getItem(backgroundKey);
 if (savedBackground) {
     root.style.setProperty('--bg-image', `url("${savedBackground}")`);
 }
+loadTemperature();
 handleGenerateClick();

@@ -54,6 +54,12 @@ body {
     flex-wrap: wrap;
 }
 
+.weather {
+    font-size: 0.95em;
+    opacity: 0.8;
+    margin: 4px 0 8px;
+}
+
 .numbers {
     display: flex;
     gap: 10px;
