@@ -131,3 +131,26 @@ header p {
     content: '📞';
     margin-right: 8px;
 }
+
+.tm-section {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border-color);
+    display: grid;
+    gap: 12px;
+    justify-items: center;
+}
+
+#webcam-container canvas {
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+}
+
+#label-container {
+    display: grid;
+    gap: 6px;
+    text-align: left;
+    width: 100%;
+    max-width: 280px;
+    font-size: 0.95rem;
+}

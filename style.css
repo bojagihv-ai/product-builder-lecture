@@ -143,6 +143,29 @@ button {
     min-width: 110px;
 }
 
+.tm-section {
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    display: grid;
+    gap: 12px;
+    justify-items: center;
+}
+
+#webcam-container canvas {
+    border-radius: 12px;
+    border: 1px solid var(--button-border);
+}
+
+#label-container {
+    display: grid;
+    gap: 6px;
+    text-align: left;
+    width: 100%;
+    max-width: 280px;
+    font-size: 0.9em;
+}
+
 @keyframes ball-roll {
     0% {
         opacity: 0;
