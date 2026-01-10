@@ -5,6 +5,12 @@ const bgUpload = document.getElementById('bg-upload');
 const weatherEl = document.getElementById('weather');
 const storageKey = 'preferred-theme';
 const backgroundKey = 'background-image';
+const defaultLocation = {
+    name: 'Seoul',
+    latitude: 37.5665,
+    longitude: 126.9780,
+};
+const weatherRefreshMs = 10 * 60 * 1000;
 const root = document.documentElement;
 
 function setTheme(theme) {
@@ -72,39 +78,63 @@ function updateWeatherStatus(message) {
     weatherEl.textContent = message;
 }
 
-function fetchTemperature(latitude, longitude) {
-    const url = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m&timezone=auto`;
+function fetchWeather(latitude, longitude) {
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,apparent_temperature&timezone=auto`;
     return fetch(url)
         .then((response) => response.json())
         .then((data) => {
             const temp = data?.current?.temperature_2m;
+            const humidity = data?.current?.relative_humidity_2m;
+            const feelsLike = data?.current?.apparent_temperature;
             const unit = data?.current_units?.temperature_2m || '°C';
-            if (typeof temp !== 'number') {
+            if (typeof temp !== 'number' || typeof humidity !== 'number' || typeof feelsLike !== 'number') {
                 throw new Error('Temperature not available');
             }
-            return `${temp}${unit}`;
+            return {
+                temp: `${temp}${unit}`,
+                humidity: `${humidity}%`,
+                feelsLike: `${feelsLike}${unit}`,
+            };
+        });
+}
+
+function renderWeather(locationName, weather) {
+    updateWeatherStatus(
+        `${locationName}: ${weather.temp} (Feels like ${weather.feelsLike}) · Humidity ${weather.humidity}`
+    );
+}
+
+function loadTemperatureWithCoords(latitude, longitude, locationName) {
+    updateWeatherStatus('Fetching temperature...');
+    fetchWeather(latitude, longitude)
+        .then((weather) => {
+            renderWeather(locationName, weather);
+        })
+        .catch(() => {
+            updateWeatherStatus('Unable to load temperature.');
         });
 }
 
 function loadTemperature() {
     if (!navigator.geolocation) {
-        updateWeatherStatus('Location not supported.');
+        loadTemperatureWithCoords(
+            defaultLocation.latitude,
+            defaultLocation.longitude,
+            defaultLocation.name
+        );
         return;
     }
-    updateWeatherStatus('Fetching temperature...');
     navigator.geolocation.getCurrentPosition(
         (position) => {
             const { latitude, longitude } = position.coords;
-            fetchTemperature(latitude, longitude)
-                .then((tempText) => {
-                    updateWeatherStatus(`Current temperature: ${tempText}`);
-                })
-                .catch(() => {
-                    updateWeatherStatus('Unable to load temperature.');
-                });
+            loadTemperatureWithCoords(latitude, longitude, 'Your location');
         },
         () => {
-            updateWeatherStatus('Location permission denied.');
+            loadTemperatureWithCoords(
+                defaultLocation.latitude,
+                defaultLocation.longitude,
+                defaultLocation.name
+            );
         },
         { timeout: 10000 }
     );
@@ -117,4 +147,5 @@ if (savedBackground) {
     root.style.setProperty('--bg-image', `url("${savedBackground}")`);
 }
 loadTemperature();
+setInterval(loadTemperature, weatherRefreshMs);
 handleGenerateClick();
