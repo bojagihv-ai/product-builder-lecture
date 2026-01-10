@@ -1,14 +1,51 @@
+:root {
+    color-scheme: light dark;
+    --bg: #f0f0f0;
+    --text: #1b1b1b;
+    --card: #ffffff;
+    --number-bg: #eeeeee;
+    --button-bg: #1b1b1b;
+    --button-text: #ffffff;
+    --button-border: #1b1b1b;
+}
+
+:root[data-theme="dark"] {
+    --bg: #0f1115;
+    --text: #f5f5f5;
+    --card: #1a1d24;
+    --number-bg: #2a2f3a;
+    --button-bg: #f5f5f5;
+    --button-text: #101216;
+    --button-border: #f5f5f5;
+}
+
 body {
     font-family: sans-serif;
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    background-color: #f0f0f0;
+    background-color: var(--bg);
+    color: var(--text);
+    transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .container {
     text-align: center;
+    background-color: var(--card);
+    padding: 24px 28px;
+    border-radius: 12px;
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.15);
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
 }
 
 .numbers {
@@ -21,15 +58,25 @@ body {
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    background-color: #eee;
+    background-color: var(--number-bg);
     display: flex;
     justify-content: center;
     align-items: center;
     font-size: 1.2em;
+    transition: background-color 0.2s ease;
 }
 
 button {
     padding: 10px 20px;
     font-size: 1em;
     cursor: pointer;
+    border-radius: 999px;
+    border: 1px solid var(--button-border);
+    background-color: var(--button-bg);
+    color: var(--button-text);
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+#theme-toggle {
+    min-width: 110px;
 }
