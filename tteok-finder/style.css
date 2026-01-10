@@ -154,3 +154,8 @@ header p {
     max-width: 280px;
     font-size: 0.95rem;
 }
+
+.tm-status {
+    font-size: 0.95rem;
+    opacity: 0.8;
+}
