@@ -1,7 +1,9 @@
 const numbersContainer = document.querySelector('.numbers');
 const generateButton = document.getElementById('generate');
 const themeToggle = document.getElementById('theme-toggle');
+const bgUpload = document.getElementById('bg-upload');
 const storageKey = 'preferred-theme';
+const backgroundKey = 'background-image';
 const root = document.documentElement;
 
 function setTheme(theme) {
@@ -33,12 +35,15 @@ function generateLottoNumbers() {
 
 function displayNumbers(numbers) {
     numbersContainer.innerHTML = '';
-    for (const number of numbers) {
+    numbers.forEach((number, index) => {
         const numberDiv = document.createElement('div');
         numberDiv.className = 'number';
         numberDiv.textContent = number;
-        numbersContainer.appendChild(numberDiv);
-    }
+        numberDiv.style.animationDelay = `${index * 120}ms`;
+        setTimeout(() => {
+            numbersContainer.appendChild(numberDiv);
+        }, index * 120);
+    });
 }
 
 function handleGenerateClick() {
@@ -48,7 +53,24 @@ function handleGenerateClick() {
 
 generateButton.addEventListener('click', handleGenerateClick);
 themeToggle.addEventListener('click', toggleTheme);
+bgUpload.addEventListener('change', (event) => {
+    const file = event.target.files[0];
+    if (!file) {
+        return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+        const dataUrl = reader.result;
+        root.style.setProperty('--bg-image', `url("${dataUrl}")`);
+        localStorage.setItem(backgroundKey, dataUrl);
+    };
+    reader.readAsDataURL(file);
+});
 
 // Initial generation
 setTheme(getInitialTheme());
+const savedBackground = localStorage.getItem(backgroundKey);
+if (savedBackground) {
+    root.style.setProperty('--bg-image', `url("${savedBackground}")`);
+}
 handleGenerateClick();

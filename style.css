@@ -1,6 +1,7 @@
 :root {
     color-scheme: light dark;
     --bg: #f0f0f0;
+    --bg-image: none;
     --text: #1b1b1b;
     --card: #ffffff;
     --number-bg: #eeeeee;
@@ -26,6 +27,10 @@ body {
     align-items: center;
     min-height: 100vh;
     background-color: var(--bg);
+    background-image: var(--bg-image);
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
     color: var(--text);
     transition: background-color 0.2s ease, color 0.2s ease;
 }
@@ -36,6 +41,7 @@ body {
     padding: 24px 28px;
     border-radius: 12px;
     box-shadow: 0 12px 28px rgba(0, 0, 0, 0.15);
+    backdrop-filter: blur(6px);
     transition: background-color 0.2s ease, box-shadow 0.2s ease;
 }
 
@@ -52,6 +58,8 @@ body {
     display: flex;
     gap: 10px;
     margin: 20px 0;
+    justify-content: center;
+    min-height: 40px;
 }
 
 .number {
@@ -64,6 +72,9 @@ body {
     align-items: center;
     font-size: 1.2em;
     transition: background-color 0.2s ease;
+    opacity: 0;
+    transform: translateY(-20px) scale(0.9);
+    animation: ball-roll 0.5s ease forwards;
 }
 
 button {
@@ -79,4 +90,41 @@ button {
 
 #theme-toggle {
     min-width: 110px;
+}
+
+.controls {
+    display: flex;
+    justify-content: center;
+    margin: 12px 0 4px;
+}
+
+.upload {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    border-radius: 999px;
+    border: 1px dashed var(--button-border);
+    cursor: pointer;
+    font-size: 0.9em;
+    background: transparent;
+}
+
+.upload input {
+    display: none;
+}
+
+@keyframes ball-roll {
+    0% {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.9) rotate(-120deg);
+    }
+    60% {
+        opacity: 1;
+        transform: translateY(6px) scale(1.05) rotate(20deg);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1) rotate(0deg);
+    }
 }
