@@ -54,6 +54,12 @@ body {
     flex-wrap: wrap;
 }
 
+.subtitle {
+    margin: 6px 0 0;
+    font-size: 0.95em;
+    opacity: 0.8;
+}
+
 .weather {
     font-size: 0.95em;
     opacity: 0.8;
@@ -153,8 +159,44 @@ button {
 }
 
 .ad-slot {
-    margin: 16px 0 8px;
-    width: min(100%, 360px);
+    margin: 20px 0 10px;
+    width: min(100%, 420px);
+    padding: 12px;
+    border-radius: 12px;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    background: rgba(0, 0, 0, 0.02);
+}
+
+.ad-label {
+    font-size: 0.75em;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    opacity: 0.6;
+    margin-bottom: 6px;
+}
+
+.content-block {
+    margin: 18px 0;
+    text-align: left;
+    max-width: 540px;
+}
+
+.content-block h2 {
+    font-size: 1.1em;
+    margin: 0 0 8px;
+}
+
+.content-block p {
+    margin: 0;
+    line-height: 1.6;
+    opacity: 0.9;
+}
+
+.content-block ul {
+    margin: 0;
+    padding-left: 18px;
+    line-height: 1.6;
+    opacity: 0.9;
 }
 
 #webcam-container canvas {
