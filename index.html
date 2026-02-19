@@ -40,13 +40,16 @@
     <section class="card">
       <h2>2) Gemini API 연결</h2>
       <div class="grid two">
-        <label>Gemini API Key
-          <input id="apiKey" type="password" placeholder="AIza...">
-        </label>
         <label>텍스트 모델명
           <input id="modelName" type="text" value="gemini-2.5-pro">
         </label>
+        <label>이미지 모델명
+          <input id="imageModelName" type="text" value="gemini-2.0-flash-preview-image-generation">
+        </label>
       </div>
+      <label>Gemini API Key
+        <input id="apiKey" type="password" placeholder="AIza...">
+      </label>
       <div class="api-actions">
         <label class="inline-check">
           <input id="rememberApi" type="checkbox">
@@ -55,6 +58,10 @@
         <label class="inline-check">
           <input id="encryptApi" type="checkbox">
           저장 시 API Key 암호화
+        </label>
+        <label class="inline-check">
+          <input id="autoImageGen" type="checkbox" checked>
+          생성 후 섹션별 이미지도 자동 생성
         </label>
       </div>
       <div class="grid two api-security-grid">
@@ -65,7 +72,7 @@
           <button id="clearApiBtn" type="button" class="secondary-btn">저장된 API 삭제</button>
         </div>
       </div>
-      <p class="muted">이미지 생성 프롬프트까지 자동 생성됩니다. 실제 이미지 렌더링은 별도 이미지 생성 API(또는 Gemini 이미지 생성 지원 모델)가 추가로 필요합니다.</p>
+      <p class="muted">이제 이미지 프롬프트뿐 아니라, 체크 시 실제 섹션 이미지도 자동 생성 시도합니다.</p>
     </section>
 
     <section class="card">
@@ -82,6 +89,7 @@
         <li>유사 제품 검색 키워드 생성</li>
         <li>Gemini 구조화(JSON) 생성</li>
         <li>출력 타입별 결과 렌더링</li>
+        <li>선택 시 섹션별 이미지 자동 생성</li>
       </ol>
       <button id="generateBtn" type="button">상세페이지 생성</button>
       <p id="status" class="status">대기 중</p>
@@ -102,7 +110,13 @@
     </section>
 
     <section class="card">
-      <h2>7) 로컬 실행/다운로드 안내</h2>
+      <h2>7) 자동 생성된 섹션 이미지</h2>
+      <p class="muted">이미지 생성 성공 시 섹션별 썸네일이 표시됩니다.</p>
+      <div id="generatedImages" class="image-grid"></div>
+    </section>
+
+    <section class="card">
+      <h2>8) 로컬 실행/다운로드 안내</h2>
       <p class="muted">아래 명령으로 바로 로컬 실행하거나 ZIP 패키지로 묶을 수 있습니다.</p>
       <pre class="cmd-box" id="localCmd">./run-local.sh
 # 또는
