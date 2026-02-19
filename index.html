@@ -1,152 +1,135 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lotto Number Generator</title>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6333384918398357"
-        crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI 상세페이지 빌더 (Local UI)</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <div>
-                <h1>Lotto Number Generator</h1>
-                <p class="subtitle">데이터 기반으로 공정하게 숫자를 생성하고, 똑똑하게 기록하세요.</p>
-            </div>
-            <button id="theme-toggle" type="button" aria-label="Toggle theme"></button>
+  <main class="app">
+    <header class="hero">
+      <h1>AI 상세페이지 자동 생성 스튜디오</h1>
+      <p>이미지 특징 분석 + 유사 제품 리서치 투트랙으로 15개 섹션을 자동 생성합니다.</p>
+    </header>
+
+    <section class="card">
+      <h2>1) 입력 정보</h2>
+      <div class="grid two">
+        <label>제품 이름
+          <input id="productName" type="text" placeholder="예: 프리미엄 무선 블렌더">
+        </label>
+        <label>카테고리
+          <input id="productCategory" type="text" placeholder="예: 주방가전">
+        </label>
+        <label>타깃 고객
+          <input id="targetAudience" type="text" placeholder="예: 20~40대 1인 가구">
+        </label>
+        <label>브랜드 톤
+          <input id="brandTone" type="text" placeholder="예: 신뢰감, 프리미엄, 미니멀">
+        </label>
+      </div>
+      <label>제품 이미지 업로드
+        <input id="productImage" type="file" accept="image/*">
+      </label>
+      <div class="preview-wrap">
+        <img id="preview" alt="업로드 미리보기" hidden>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>2) Gemini API 연결</h2>
+      <div class="grid two">
+        <label>텍스트 모델명
+          <input id="modelName" type="text" value="gemini-2.5-pro">
+        </label>
+        <label>이미지 모델명
+          <input id="imageModelName" type="text" value="gemini-2.0-flash-preview-image-generation">
+        </label>
+      </div>
+      <label>Gemini API Key
+        <input id="apiKey" type="password" placeholder="AIza...">
+      </label>
+      <div class="api-actions">
+        <label class="inline-check">
+          <input id="rememberApi" type="checkbox">
+          이 브라우저에 API 설정 저장
+        </label>
+        <label class="inline-check">
+          <input id="encryptApi" type="checkbox">
+          저장 시 API Key 암호화
+        </label>
+        <label class="inline-check">
+          <input id="autoImageGen" type="checkbox" checked>
+          생성 후 섹션별 이미지도 자동 생성
+        </label>
+      </div>
+      <div class="grid two api-security-grid">
+        <label>저장 비밀번호(암호화 시 필수)
+          <input id="apiPassphrase" type="password" placeholder="복호화에 사용할 비밀번호">
+        </label>
+        <div class="api-btn-wrap">
+          <button id="clearApiBtn" type="button" class="secondary-btn">저장된 API 삭제</button>
         </div>
-        <div id="weather" class="weather">Loading temperature...</div>
-        <section class="content-block">
-            <h2>왜 이 페이지인가요?</h2>
-            <p>
-                무작위성은 공정함의 출발점입니다. 이 페이지는 과장된 약속 없이, 누구나 이해할 수 있는 방식으로
-                숫자를 생성하고 결과를 명확하게 보여줍니다. 불필요한 클릭 유도 없이 한 화면에서 필요한 정보를 제공합니다.
-            </p>
-        </section>
-        <div class="controls">
-            <label class="upload">
-                <span>Upload Background</span>
-                <input id="bg-upload" type="file" accept="image/*">
-            </label>
-        </div>
-        <div class="controls">
-            <label class="select">
-                <span>City</span>
-                <select id="city-select">
-                    <option value="37.5665,126.9780">Seoul</option>
-                    <option value="35.1796,129.0756">Busan</option>
-                    <option value="37.4563,126.7052">Incheon</option>
-                    <option value="37.2636,127.0286">Suwon</option>
-                    <option value="35.1595,126.8526">Gwangju</option>
-                </select>
-            </label>
-            <label class="select">
-                <span>Refresh (min)</span>
-                <input id="refresh-interval" type="number" min="1" max="120" value="10">
-            </label>
-        </div>
-        <div class="numbers"></div>
-        <div class="ad-slot">
-            <div class="ad-label">Sponsored</div>
-            <ins class="adsbygoogle"
-                 style="display:block"
-                 data-ad-client="ca-pub-6333384918398357"
-                 data-ad-slot="4441435081"
-                 data-ad-format="auto"
-                 data-full-width-responsive="true"></ins>
-            <script>
-                 (adsbygoogle = window.adsbygoogle || []).push({});
-            </script>
-        </div>
-        <button id="generate">Generate Numbers</button>
-        <section class="content-block">
-            <h2>공정한 사용 원칙</h2>
-            <ul>
-                <li>중복된 페이지를 만들지 않고 하나의 도구에 집중합니다.</li>
-                <li>과도한 광고 대신, 콘텐츠가 중심이 되는 구조를 유지합니다.</li>
-                <li>사용자가 원하는 정보를 쉽게 찾도록 레이아웃을 단순화했습니다.</li>
-            </ul>
-        </section>
-        <section class="content-block">
-            <h2>사용자에게 초점을 맞추면 나머지는 따라옵니다</h2>
-            <p>
-                고품질 사이트의 핵심은 사용자가 돌아오고 싶은 경험입니다. 이 페이지는 광고보다 콘텐츠가 더 눈에 띄고,
-                필요한 기능을 빠르게 제공하는 것을 목표로 합니다.
-            </p>
-        </section>
-        <section class="tm-section">
-            <div>Teachable Machine Image Model</div>
-            <button type="button" onclick="init()">Start</button>
-            <div id="tm-status" class="tm-status">Waiting to start.</div>
-            <div id="webcam-container"></div>
-            <div id="label-container"></div>
-        </section>
-    </div>
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
-    <script type="text/javascript">
-        // More API functions here:
-        // https://github.com/googlecreativelab/teachablemachine-community/tree/master/libraries/image
+      </div>
+      <p class="muted">이제 이미지 프롬프트뿐 아니라, 체크 시 실제 섹션 이미지도 자동 생성 시도합니다.</p>
+    </section>
 
-        // the link to your model provided by Teachable Machine export panel
-        const URL = "./my_model/";
+    <section class="card">
+      <h2>3) 15개 섹션 요구사항 + 출력 타입</h2>
+      <p class="muted">각 항목마다 출력 타입을 선택하세요: 문구 / 이미지 프롬프트 / 둘 다.</p>
+      <div id="sectionGrid" class="section-grid"></div>
+    </section>
 
-        let model, webcam, labelContainer, maxPredictions;
+    <section class="card">
+      <h2>4) 생성 실행</h2>
+      <ol class="pipeline">
+        <li>이미지 수집</li>
+        <li>자체 비전 분석(색상/구도/밝기/비율)</li>
+        <li>유사 제품 검색 키워드 생성</li>
+        <li>Gemini 구조화(JSON) 생성</li>
+        <li>출력 타입별 결과 렌더링</li>
+        <li>선택 시 섹션별 이미지 자동 생성</li>
+      </ol>
+      <button id="generateBtn" type="button">상세페이지 생성</button>
+      <p id="status" class="status">대기 중</p>
+    </section>
 
-        // Load the image model and setup the webcam
-        async function init() {
-            const statusEl = document.getElementById("tm-status");
-            const modelURL = URL + "model.json";
-            const metadataURL = URL + "metadata.json";
+    <section class="card">
+      <h2>5) 자동 분석 결과</h2>
+      <pre id="analysisOutput" class="output"></pre>
+    </section>
 
-            try {
-                // load the model and metadata
-                // Refer to tmImage.loadFromFiles() in the API to support files from a file picker
-                // or files from your local hard drive
-                // Note: the pose library adds "tmImage" object to your window (window.tmImage)
-                statusEl.textContent = "Loading model...";
-                model = await tmImage.load(modelURL, metadataURL);
-                maxPredictions = model.getTotalClasses();
+    <section class="card">
+      <h2>6) 생성 결과 (Markdown)</h2>
+      <textarea id="resultOutput" class="result" spellcheck="false"></textarea>
+      <div class="actions">
+        <button id="copyBtn" type="button">복사</button>
+        <button id="downloadBtn" type="button">.md 저장</button>
+      </div>
+    </section>
 
-                // Convenience function to setup a webcam
-                const flip = true; // whether to flip the webcam
-                webcam = new tmImage.Webcam(200, 200, flip); // width, height, flip
-                await webcam.setup(); // request access to the webcam
-                await webcam.play();
-                window.requestAnimationFrame(loop);
+    <section class="card">
+      <h2>7) 자동 생성된 섹션 이미지</h2>
+      <p class="muted">이미지 생성 성공 시 섹션별 썸네일이 표시됩니다.</p>
+      <div id="generatedImages" class="image-grid"></div>
+    </section>
 
-                // append elements to the DOM
-                document.getElementById("webcam-container").appendChild(webcam.canvas);
-                labelContainer = document.getElementById("label-container");
-                for (let i = 0; i < maxPredictions; i++) { // and class labels
-                    labelContainer.appendChild(document.createElement("div"));
-                }
-                statusEl.textContent = "Webcam ready.";
-            } catch (error) {
-                console.error("Teachable Machine init failed:", error);
-                statusEl.textContent = "Failed to start. Check camera permission and reload.";
-            }
-        }
+    <section class="card">
+      <h2>8) 로컬 실행/다운로드 안내</h2>
+      <p class="muted">아래 명령으로 바로 로컬 실행하거나 ZIP 패키지로 묶을 수 있습니다.</p>
+      <pre class="cmd-box" id="localCmd">./run-local.sh
+# 또는
+python3 -m http.server 4173
 
-        async function loop() {
-            webcam.update(); // update the webcam frame
-            await predict();
-            window.requestAnimationFrame(loop);
-        }
+./build-local-package.sh</pre>
+      <div class="actions">
+        <button id="copyRunCmdBtn" type="button">실행 명령 복사</button>
+      </div>
+    </section>
 
-        // run the webcam image through the image model
-        async function predict() {
-            // predict can take in an image, video or canvas html element
-            const prediction = await model.predict(webcam.canvas);
-            for (let i = 0; i < maxPredictions; i++) {
-                const classPrediction =
-                    prediction[i].className + ": " + prediction[i].probability.toFixed(2);
-                labelContainer.childNodes[i].innerHTML = classPrediction;
-            }
-        }
-    </script>
-    <script src="main.js"></script>
+  </main>
+
+  <script src="main.js"></script>
 </body>
 </html>
