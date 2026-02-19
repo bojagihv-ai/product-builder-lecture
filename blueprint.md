@@ -1,23 +1,30 @@
-
-# Lotto Number Generator
+# AI 상세페이지 자동 생성 스튜디오 Blueprint
 
 ## Overview
+- 로컬 UI에서 제품 이미지 + 텍스트 요구사항을 받아 15개 상세페이지 섹션을 자동 생성한다.
+- 투트랙 전략:
+  1) 자체 이미지 분석(색상/밝기/비율)
+  2) 유사 제품 벤치마크 키워드 자동 제안
+- 섹션별 출력 타입 분리(문구/이미지 프롬프트/둘 다)
+- 로컬에서 바로 실행 가능한 스크립트와 ZIP 패키징 스크립트를 제공한다.
 
-This is a simple web application that generates random lottery numbers.
+## Implemented UX / Features
+- 제품 정보 입력(이름/카테고리/타깃/브랜드 톤)
+- 제품 이미지 업로드/미리보기
+- Gemini API Key + 모델명 입력
+- API 설정 localStorage 저장/삭제
+- API Key 암호화 저장(AES-GCM + 비밀번호)
+- 15개 섹션별 요구사항 + 출력 타입 선택
+- Gemini JSON 응답 강제 + 파싱/정규화
+- API 미입력 fallback 템플릿 생성
+- Markdown 결과 복사/다운로드
+- 로컬 실행 명령 안내 + 명령 복사 버튼
+- `run-local.sh`(로컬 서버 실행), `build-local-package.sh`(ZIP 생성)
 
-## Design and Features
-
-*   **UI:**
-    *   A clean and modern interface.
-    *   A prominent title.
-    *   A display area for the generated numbers.
-    *   A button to generate new numbers.
-*   **Functionality:**
-    *   Generates 6 unique random numbers between 1 and 45.
-    *   Displays the numbers in a clear and readable format.
-
-## Current Plan
-
-*   **Step 1:** Modify `index.html` to create the basic structure of the application.
-*   **Step 2:** Modify `style.css` to style the application.
-*   **Step 3:** Modify `main.js` to implement the lottery number generation logic.
+## Current Change Plan
+1. 로컬 실행 스크립트 추가
+2. ZIP 패키징 스크립트 추가
+3. UI에 로컬 실행/다운로드 안내 추가
+4. API 저장/삭제 + 암호화 UX 반영
+5. README 문서화
+6. 점검 및 화면 캡처
