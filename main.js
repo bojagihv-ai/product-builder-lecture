@@ -218,7 +218,10 @@ async function callGeminiImage(apiKey, modelName, prompt) {
   });
   if (!response.ok) {
     const message = await response.text();
-    throw new Error(`이미지 생성 실패: ${response.status} ${message}`);
+    const error = new Error(`이미지 생성 실패: ${response.status} ${message}`);
+    error.statusCode = response.status;
+    error.rawMessage = message;
+    throw error;
   }
   const data = await response.json();
   const parts = data?.candidates?.[0]?.content?.parts || [];
@@ -229,6 +232,47 @@ async function callGeminiImage(apiKey, modelName, prompt) {
   const mimeType = inlineImage.inlineData.mimeType || 'image/png';
   return `data:${mimeType};base64,${inlineImage.inlineData.data}`;
 }
+
+function normalizeModelName(name) {
+  return name.startsWith('models/') ? name.slice(7) : name;
+}
+
+async function listGeminiModels(apiKey) {
+  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models?key=${encodeURIComponent(apiKey)}`;
+  const response = await fetch(endpoint);
+  if (!response.ok) {
+    const message = await response.text();
+    throw new Error(`모델 목록 조회 실패: ${response.status} ${message}`);
+  }
+  const data = await response.json();
+  return data?.models || [];
+}
+
+function getImageCapableModelNames(models) {
+  return models
+    .filter((model) => {
+      const methods = model.supportedGenerationMethods || [];
+      const name = normalizeModelName(model.name || '').toLowerCase();
+      return methods.includes('generateContent') && (name.includes('image') || name.includes('imagen'));
+    })
+    .map((model) => normalizeModelName(model.name));
+}
+
+async function resolveImageModel(apiKey, preferredModel) {
+  const models = await listGeminiModels(apiKey);
+  const imageModels = getImageCapableModelNames(models);
+  if (!imageModels.length) {
+    throw new Error('사용 가능한 이미지 생성 모델을 찾지 못했습니다. API 키 권한/프로젝트를 확인해 주세요.');
+  }
+
+  const preferred = normalizeModelName(preferredModel || '');
+  if (preferred && imageModels.includes(preferred)) {
+    return { selectedModel: preferred, fallbackModels: imageModels.filter((name) => name !== preferred) };
+  }
+
+  return { selectedModel: imageModels[0], fallbackModels: imageModels.slice(1) };
+}
+
 function renderGeneratedImages(items) {
   refs.generatedImages.innerHTML = '';
   if (!items.length) {
@@ -253,11 +297,14 @@ function renderGeneratedImages(items) {
   });
   refs.generatedImages.appendChild(fragment);
 }
-async function generateSectionImages(apiKey, modelName, productName, sectionsToRender) {
+async function generateSectionImages(apiKey, modelName, fallbackModels, productName, sectionsToRender) {
   const generated = [];
+  let activeModel = normalizeModelName(modelName);
+  const standbyModels = [...fallbackModels];
+
   for (let i = 0; i < sectionsToRender.length; i += 1) {
     const section = sectionsToRender[i];
-    updateStatus(`이미지 생성 중... (${i + 1}/${sectionsToRender.length}) ${section.title}`);
+    updateStatus(`이미지 생성 중... (${i + 1}/${sectionsToRender.length}) ${section.title} [${activeModel}]`);
     const prompt = [
       `한국 이커머스 상세페이지 섹션 이미지 생성`,
       `제품명: ${productName || '제품'}`,
@@ -265,10 +312,23 @@ async function generateSectionImages(apiKey, modelName, productName, sectionsToR
       `요구사항: ${section.imagePrompt}`,
       `스타일: 깨끗한 화이트톤, 상업용 제품 상세페이지, 텍스트 오버레이 없음`
     ].join('\n');
-    const dataUrl = await callGeminiImage(apiKey, modelName, prompt);
-    generated.push({ title: section.title, dataUrl });
+
+    try {
+      const dataUrl = await callGeminiImage(apiKey, activeModel, prompt);
+      generated.push({ title: section.title, dataUrl });
+    } catch (error) {
+      if (error.statusCode === 404 && standbyModels.length) {
+        activeModel = standbyModels.shift();
+        updateStatus(`이미지 모델 404 감지, ${activeModel}로 재시도합니다.`);
+        const dataUrl = await callGeminiImage(apiKey, activeModel, prompt);
+        generated.push({ title: section.title, dataUrl });
+      } else {
+        throw error;
+      }
+    }
   }
-  return generated;
+
+  return { generated, usedModel: activeModel };
 }
 function extractJsonText(rawText) {
   if (!rawText) {
@@ -522,14 +582,24 @@ refs.generateBtn.addEventListener('click', async () => {
       const targets = structured.sections.filter((section) => section.imagePrompt);
       if (targets.length) {
         try {
-          const images = await generateSectionImages(
+          const resolved = await resolveImageModel(
             apiKey,
-            refs.imageModelName.value.trim() || 'gemini-2.0-flash-preview-image-generation',
+            refs.imageModelName.value.trim() || 'gemini-2.0-flash-preview-image-generation'
+          );
+
+          if (resolved.selectedModel !== refs.imageModelName.value.trim()) {
+            refs.imageModelName.value = resolved.selectedModel;
+          }
+
+          const imageResult = await generateSectionImages(
+            apiKey,
+            resolved.selectedModel,
+            resolved.fallbackModels,
             refs.productName.value.trim(),
             targets
           );
-          renderGeneratedImages(images);
-          updateStatus('완료! 텍스트/프롬프트 + 섹션 이미지 생성까지 완료했습니다.');
+          renderGeneratedImages(imageResult.generated);
+          updateStatus(`완료! 텍스트/프롬프트 + 섹션 이미지 생성 완료 (사용 모델: ${imageResult.usedModel})`);
         } catch (imageError) {
           updateStatus(`텍스트 생성 완료. 이미지 생성은 실패: ${imageError.message}`);
         }

@@ -28,7 +28,8 @@ ZIP 안에는 아래가 포함됩니다.
 ## API 관련
 - 텍스트/이미지 프롬프트 생성: Gemini API Key 필요
 - `생성 후 섹션별 이미지도 자동 생성` 체크 시 Gemini 이미지 모델로 실제 섹션 이미지를 순차 생성합니다.
-- 기본 이미지 모델명은 `gemini-2.0-flash-preview-image-generation`이며, 계정/모델 권한에 따라 실패할 수 있습니다.
+- 기본 이미지 모델명은 `gemini-2.0-flash-preview-image-generation`이며, 실패 시 API에서 사용 가능한 이미지 모델 목록을 조회해 자동 대체 시도합니다.
+- 404 모델 에러가 나면 앱이 자동으로 대체 모델을 찾고 재시도합니다.
 
 ## API 설정 저장
 - UI의 "이 브라우저에 API 설정 저장" 체크 시 API Key/모델명이 localStorage에 저장됩니다.
